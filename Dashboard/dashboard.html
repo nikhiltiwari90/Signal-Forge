@@ -1,1 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SignalForge — Implementation Dashboard</title>
+<style>
+:root {
+  --bg: #0B0B0B;
+  --surface-1: #1A1A19;
+  --surface-2: #232322;
+  --border: rgba(255,255,255,0.10);
+  --text-primary: #FFFFFF;
+  --text-secondary: #C3C2B7;
+  --text-muted: #898781;
+  --success-bg: rgba(99,153,34,0.18);
+  --success-text: #97C459;
+  --warning-bg: rgba(186,117,23,0.18);
+  --warning-text: #EF9F27;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 32px 24px 60px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+.header { margin-bottom: 28px; }
+.kicker { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+.title { font-size: 22px; font-weight: 600; }
+.subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+.mcard { background: var(--surface-1); border-radius: 10px; padding: 18px; }
+.mcard .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+.mcard .value { font-size: 28px; font-weight: 600; }
+.mcard .delta { font-size: 12px; margin-top: 6px; color: var(--success-text); }
+.mcard .delta.muted { color: var(--text-muted); }
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.chart-panel { background: var(--surface-1); border-radius: 10px; padding: 18px; }
+.chart-title { font-size: 14px; font-weight: 500; margin-bottom: 14px; }
+.legend { display: flex; gap: 16px; margin-bottom: 10px; font-size: 12px; color: var(--text-secondary); }
+.legend span { display: flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.chart-wrap { position: relative; width: 100%; height: 220px; }
+table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 8px; }
+th { text-align: left; padding: 10px 6px; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border); }
+td { padding: 10px 6px; border-bottom: 1px solid var(--border); }
+td:not(:first-child), th:not(:first-child) { text-align: right; }
+.badge { font-size: 11px; padding: 3px 10px; border-radius: 6px; }
+.badge.met { background: var(--success-bg); color: var(--success-text); }
+.badge.progress { background: var(--warning-bg); color: var(--warning-text); }
+.footnote { font-size: 12px; color: var(--text-muted); margin-top: 20px; }
+.scorecard-panel { background: var(--surface-1); border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+.section-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 28px 0 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
 
+  <div class="header">
+    <div class="kicker">SignalForge · Predictive Maintenance &amp; Workforce Safety Platform</div>
+    <div class="title">90-day pilot results — Bhilwara textile plant</div>
+    <div class="subtitle">Octacorps Industrial Automation Consultancy · Author: Nikhil Tiwari, Product Manager</div>
+  </div>
+
+  <div class="metrics">
+    <div class="mcard">
+      <div class="label">First-time-fix rate</div>
+      <div class="value">71%</div>
+      <div class="delta">↑ from 47% baseline</div>
+    </div>
+    <div class="mcard">
+      <div class="label">MTTR (avg)</div>
+      <div class="value">58 min</div>
+      <div class="delta">↓ 38% from 94 min</div>
+    </div>
+    <div class="mcard">
+      <div class="label">Monthly downtime</div>
+      <div class="value">211 hrs</div>
+      <div class="delta">↓ 38% from 340 hrs</div>
+    </div>
+    <div class="mcard">
+      <div class="label">Strain-flagged incidents</div>
+      <div class="value">312</div>
+      <div class="delta muted">newly measured (was 0)</div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-panel">
+      <div class="chart-title">First-time-fix rate — weekly trend</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#2a78d6"></span>First-time-fix rate</span>
+        <span><span class="dot" style="background:#898781"></span>Target (70%)</span>
+      </div>
+      <div class="chart-wrap"><canvas id="ftfrChart" role="img" aria-label="Line chart showing first-time-fix rate climbing from 47% baseline in week 1 to 71% by week 12, crossing the 70% target around week 10">First-time-fix rate rose from 47% to 71% over 12 weeks.</canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-title">Monthly downtime hours — before vs after</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#898781"></span>Baseline</span>
+        <span><span class="dot" style="background:#1baf7a"></span>Pilot (90-day avg)</span>
+      </div>
+      <div class="chart-wrap"><canvas id="downtimeChart" role="img" aria-label="Bar chart comparing monthly downtime hours by equipment category before and after the pilot">Downtime hours dropped across conveyors, loom feeders, and dyeing pumps.</canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-panel">
+      <div class="chart-title">Repeat dispatch rate ("defect" rate) — weekly trend</div>
+      <div class="chart-wrap"><canvas id="defectChart" role="img" aria-label="Line chart showing repeat dispatch defect rate falling from 53% in week 1 to 29% by week 12">Repeat dispatch rate fell from 53% to 29% over 12 weeks.</canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-title">Associate strain exposure index — by shift</div>
+      <div class="chart-wrap"><canvas id="strainChart" role="img" aria-label="Horizontal bar chart showing associate strain exposure index by shift: night shift highest at 34, evening shift 22, morning shift 14">Night shift carries the highest strain exposure index at 34.</canvas></div>
+    </div>
+  </div>
+
+  <div class="section-label">AI agent pipeline performance</div>
+  <div class="charts-row">
+    <div class="chart-panel">
+      <div class="chart-title">Signal Anomaly Agent — precision trend</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#1baf7a"></span>Precision (true positives / flagged)</span>
+      </div>
+      <div class="chart-wrap"><canvas id="precisionChart" role="img" aria-label="Line chart showing Signal Anomaly Agent precision climbing from 58% in week 1 to 84% by week 12 as the model tunes against confirmed repairs">Signal anomaly detection precision improved from 58% to 84% over 12 weeks as the model tuned against confirmed repair outcomes.</canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-title">Failure Prediction Agent — lead time distribution</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#2a78d6"></span>Predictions by lead time bucket</span>
+      </div>
+      <div class="chart-wrap"><canvas id="leadTimeChart" role="img" aria-label="Bar chart showing distribution of predictive alert lead times: most predictions land in the 4 to 8 hour bucket, meeting the 4 hour minimum target">Most predictions land in the 4-8 hour lead time bucket, meeting the minimum 4-hour target needed for technicians to prepare correctly.</canvas></div>
+    </div>
+  </div>
+
+  <div class="metrics" style="margin-bottom: 20px;">
+    <div class="mcard">
+      <div class="label">Anomaly agent precision</div>
+      <div class="value">84%</div>
+      <div class="delta">↑ from 58% wk 1</div>
+    </div>
+    <div class="mcard">
+      <div class="label">Failure mode match rate</div>
+      <div class="value">76%</div>
+      <div class="delta">Agent 2 vs confirmed repairs</div>
+    </div>
+    <div class="mcard">
+      <div class="label">Dispatch acceptance rate</div>
+      <div class="value">81%</div>
+      <div class="delta">Agent 3 recommendation followed</div>
+    </div>
+    <div class="mcard">
+      <div class="label">Avg prediction lead time</div>
+      <div class="value">4.6 hrs</div>
+      <div class="delta">↑ meets ≥4 hr target</div>
+    </div>
+  </div>
+
+  <div class="scorecard-panel">
+    <div class="chart-title">Pilot scorecard vs Six Sigma DMAIC targets</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Baseline</th><th>Target</th><th>Actual</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>First-time-fix rate</td><td>47%</td><td>≥70%</td><td>71%</td><td><span class="badge met">Met</span></td></tr>
+        <tr><td>MTTR reduction</td><td>94 min</td><td>≥35% cut</td><td>38% cut</td><td><span class="badge met">Met</span></td></tr>
+        <tr><td>Predictive alert lead time</td><td>n/a</td><td>≥4 hrs</td><td>4.6 hrs avg</td><td><span class="badge met">Met</span></td></tr>
+        <tr><td>Strain exposure baseline established</td><td>Not tracked</td><td>Establish baseline</td><td>312 incidents logged</td><td><span class="badge met">Met</span></td></tr>
+        <tr><td>Structured failure-mode capture rate</td><td>~12%</td><td>≥85%</td><td>79%</td><td><span class="badge progress">In progress</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footnote">Figures reflect a 90-day pilot across 3 prioritised equipment categories (conveyors, loom feeders, dyeing pumps) at a single Bhilwara plant site. Baseline drawn from 6 months of historical maintenance logs. All figures are illustrative reconstructions for portfolio purposes — see LICENSE.md.</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const muted = '#898781';
+const grid = '#2c2c2a';
+const primary = '#ffffff';
+
+new Chart(document.getElementById('ftfrChart'), {
+  type: 'line',
+  data: {
+    labels: ['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8','Wk9','Wk10','Wk11','Wk12'],
+    datasets: [
+      { label: 'First-time-fix rate', data: [47,49,52,55,58,61,63,65,67,69,70,71], borderColor: '#2a78d6', backgroundColor: 'rgba(42,120,214,0.12)', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: '#2a78d6', borderWidth: 2 },
+      { label: 'Target', data: [70,70,70,70,70,70,70,70,70,70,70,70], borderColor: muted, borderDash: [6,4], pointRadius: 0, borderWidth: 1.5, fill: false }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { y: { min: 40, max: 80, ticks: { color: muted, callback: v => v + '%' }, grid: { color: grid } }, x: { ticks: { color: muted }, grid: { display: false } } } }
+});
+
+new Chart(document.getElementById('downtimeChart'), {
+  type: 'bar',
+  data: { labels: ['Conveyors','Loom feeders','Dyeing pumps'],
+    datasets: [ { label: 'Baseline', data: [142,118,80], backgroundColor: '#898781', borderRadius: 4 }, { label: 'Pilot', data: [84,76,51], backgroundColor: '#1baf7a', borderRadius: 4 } ] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { color: muted, callback: v => v + 'h' }, grid: { color: grid } }, x: { ticks: { color: muted }, grid: { display: false } } } }
+});
+
+new Chart(document.getElementById('defectChart'), {
+  type: 'line',
+  data: { labels: ['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8','Wk9','Wk10','Wk11','Wk12'],
+    datasets: [{ label: 'Repeat dispatch rate', data: [53,51,48,45,42,39,37,35,33,31,30,29], borderColor: '#e34948', backgroundColor: 'rgba(227,73,72,0.1)', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: '#e34948', borderWidth: 2 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { y: { min: 20, max: 60, ticks: { color: muted, callback: v => v + '%' }, grid: { color: grid } }, x: { ticks: { color: muted }, grid: { display: false } } } }
+});
+
+new Chart(document.getElementById('strainChart'), {
+  type: 'bar',
+  data: { labels: ['Morning shift','Evening shift','Night shift'],
+    datasets: [{ data: [14,22,34], backgroundColor: ['#eda100','#eb6834','#e34948'], borderRadius: 4 }] },
+  options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { x: { beginAtZero: true, ticks: { color: muted }, grid: { color: grid } }, y: { ticks: { color: primary }, grid: { display: false } } } }
+});
+new Chart(document.getElementById('precisionChart'), {
+  type: 'line',
+  data: { labels: ['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8','Wk9','Wk10','Wk11','Wk12'],
+    datasets: [{ label: 'Precision', data: [58,61,65,68,71,74,77,79,81,82,83,84], borderColor: '#1baf7a', backgroundColor: 'rgba(27,175,122,0.1)', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: '#1baf7a', borderWidth: 2 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { y: { min: 40, max: 100, ticks: { color: muted, callback: v => v + '%' }, grid: { color: grid } }, x: { ticks: { color: muted }, grid: { display: false } } } }
+});
+
+new Chart(document.getElementById('leadTimeChart'), {
+  type: 'bar',
+  data: { labels: ['0-2 hrs','2-4 hrs','4-6 hrs','6-8 hrs','8+ hrs'],
+    datasets: [{ data: [8,19,42,24,7], backgroundColor: '#2a78d6', borderRadius: 4 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { color: muted, callback: v => v + '%' }, grid: { color: grid } }, x: { ticks: { color: muted }, grid: { display: false } } } }
+});
+</script>
+</body>
+</html>

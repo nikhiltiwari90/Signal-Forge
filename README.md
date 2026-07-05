@@ -114,8 +114,7 @@ signalforge/
 ├── assets/                            ← Architecture diagrams & pilot charts (PNG)
 ├── dashboard/
 │   └── dashboard.html                 ← Standalone interactive implementation dashboard
-└── demo/
-    └── InterviewScript.md             ← How to tell this story for Amazon RME PM
+
 ```
 
 ---

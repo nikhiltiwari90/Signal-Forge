@@ -9,10 +9,6 @@
  Scale: Single industrial site, 500+ daily workforce
  Domain: Industrial IoT · Reliability & Maintenance Engineering · Agentic AI · Workforce Safety
 
-> Applying for an Amazon TPM or RME Program Manager role?** Sections 21–24 of the Master Document are written specifically for that review: a program charter and RACI, milestone timeline and critical-path vendor management, a technical risk register scoped to the AI system itself, per-agent latency budgets and evaluation methodology, an Amazon Leadership Principles mapping grounded in specific project moments, and a full Amazon-style narrative 6-pager. Short on time? Read Section 24 alone.
-
-
-
 ## One-Sentence Summary
 
 > SignalForge turns raw PLC and sensor signal data from factory-floor machinery into AI-driven failure predictions, skill-matched technician dispatch, and the plant's first systematic visibility into how equipment downtime affects worker physical strain — built end-to-end from floor research, electrical signal analysis, and a 4-agent AI reasoning pipeline.

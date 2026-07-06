@@ -119,7 +119,7 @@ signalforge/
 
 ---
 
-## Why This Matters For an Amazon Reliability & Maintenance Engineering PM Role
+## Why This Matters 
 
 | What the role needs | What SignalForge demonstrates |
 |---|---|
